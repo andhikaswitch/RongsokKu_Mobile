@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../theme.dart';
 import '../../widgets.dart';
 import 'shell.dart';
@@ -9,110 +10,142 @@ class DompetScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Dompet',
-            style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18)),
-      ),
+      appBar: subBar('Dompet & Saldo', 'Deposit untuk komisi platform'),
       bottomNavigationBar: pengepulNav(context, 4),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+        padding: const EdgeInsets.all(16),
         children: [
+          // Kartu saldo
           Container(
-            padding: const EdgeInsets.all(22),
+            padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [AppColors.emerald, AppColors.emeraldDark],
-              ),
               borderRadius: BorderRadius.circular(20),
+              gradient: const LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [AppColors.merk700, Color(0xFF069669)],
+                stops: [0, 0.625],
+              ),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
+              children: [
                 Text('Saldo tersedia',
-                    style: TextStyle(color: Color(0xFFD1FAE5))),
-                SizedBox(height: 6),
-                Text('Rp 1.250.000',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 30,
-                        fontWeight: FontWeight.w800)),
+                    style: T.s.copyWith(color: AppColors.merk100)),
+                const SizedBox(height: 6),
+                Text('Rp 148.500', style: T.xl.copyWith(color: AppColors.putih)),
+                const SizedBox(height: 12),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(999),
+                  child: LinearProgressIndicator(
+                    value: 0.74,
+                    minHeight: 6,
+                    backgroundColor: AppColors.putih.withValues(alpha: 0.2),
+                    valueColor:
+                        const AlwaysStoppedAnimation(AppColors.nilai500),
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Batas minimum Rp 50.000',
+                        style: T.xs.copyWith(
+                            color: AppColors.merk100,
+                            fontWeight: FontWeight.w400)),
+                    Text('≈ 59 transaksi lagi',
+                        style: T.xs.copyWith(
+                            color: AppColors.merk100,
+                            fontWeight: FontWeight.w400)),
+                  ],
+                ),
+                const SizedBox(height: 14),
+                PrimaryButton.amber(label: 'Isi Saldo via Transfer', onTap: () {}),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          AppCard(
+            color: AppColors.sky50,
+            borderColor: const Color(0xFFBAE6FD),
+            padding: const EdgeInsets.all(14),
+            child: Row(
+              children: [
+                const IconBox(LucideIcons.clock,
+                    bg: AppColors.putih, fg: AppColors.sky700),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Top-up Rp 200.000 diproses',
+                          style: T.bodyBold.copyWith(color: AppColors.sky700)),
+                      Text('Bukti transfer sedang diverifikasi admin',
+                          style: T.s.copyWith(color: AppColors.sky700)),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
           const SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                child: PrimaryButton(
-                  label: 'Isi Saldo',
-                  icon: Icons.add,
-                  onTap: () => _topup(context),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: OutlineButton(
-                  label: 'Tarik',
-                  onTap: () => _topup(context),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 24),
-          const SectionHeader('Riwayat transaksi'),
+          const SectionHeader('Mutasi Saldo', action: 'Unduh CSV'),
           const SizedBox(height: 12),
-          for (final t in _riwayat)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 10),
-              child: AppCard(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                child: Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 20,
-                      backgroundColor:
-                          t.$4 ? AppColors.emeraldLight : AppColors.amberLight,
-                      child: Icon(
-                          t.$4 ? Icons.south_west : Icons.north_east,
-                          size: 18,
-                          color: t.$4 ? AppColors.emerald : AppColors.amber),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(t.$1,
-                              style:
-                                  const TextStyle(fontWeight: FontWeight.w700)),
-                          Text(t.$2,
-                              style: const TextStyle(
-                                  color: AppColors.inkMuted, fontSize: 12)),
-                        ],
-                      ),
-                    ),
-                    Text(t.$3,
-                        style: TextStyle(
-                            fontWeight: FontWeight.w800,
-                            color: t.$4 ? AppColors.emerald : AppColors.ink)),
-                  ],
-                ),
-              ),
+          AppCard(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+            child: Column(
+              children: [
+                for (int i = 0; i < _mutasi.length; i++) ...[
+                  if (i > 0) const Sep(),
+                  _MutasiRow(_mutasi[i]),
+                ],
+              ],
             ),
+          ),
         ],
       ),
     );
   }
+}
 
-  void _topup(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Fitur dummy — UI prototype')),
+const _mutasi = [
+  (LucideIcons.wallet, 'Top-up disetujui', '28 Sep · TOP-00041', '+ Rp 200.000', true),
+  (LucideIcons.recycle, 'Komisi RSK-00127', 'Hari ini · 5% × Rp 32.700', '− Rp 1.635', false),
+  (LucideIcons.recycle, 'Komisi RSK-00124', '30 Sep · 5% × Rp 88.200', '− Rp 4.410', false),
+  (LucideIcons.recycle, 'Komisi RSK-00119', '29 Sep · 5% × Rp 51.400', '− Rp 2.570', false),
+  (LucideIcons.shieldCheck, 'Penyesuaian sengketa', '27 Sep · SKT-00001', '+ Rp 1.200', true),
+];
+
+class _MutasiRow extends StatelessWidget {
+  final (IconData, String, String, String, bool) m;
+  const _MutasiRow(this.m);
+
+  @override
+  Widget build(BuildContext context) {
+    final masuk = m.$5;
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: Row(
+        children: [
+          IconBox(m.$1,
+              size: 36,
+              bg: masuk ? AppColors.merk50 : AppColors.slate100,
+              fg: masuk ? AppColors.merk700 : AppColors.slate600),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(m.$2, style: T.bodyBold),
+                Text(m.$3, style: T.s),
+              ],
+            ),
+          ),
+          Text(m.$4,
+              style: T.bodyBold.copyWith(
+                  color: masuk ? AppColors.merk600 : AppColors.slate900)),
+        ],
+      ),
     );
   }
 }
-
-const _riwayat = [
-  ('Pembayaran ke Andhika', '10 Okt • 14.20', '- Rp 40.000', false),
-  ('Isi saldo', '9 Okt • 09.00', '+ Rp 500.000', true),
-  ('Pembayaran ke Sari', '8 Okt • 16.45', '- Rp 32.000', false),
-];

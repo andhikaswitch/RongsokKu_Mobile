@@ -1,71 +1,135 @@
 import 'package:flutter/material.dart';
-import '../../routes.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../theme.dart';
 import '../../widgets.dart';
 
-class HargaScreen extends StatelessWidget {
+class HargaScreen extends StatefulWidget {
   const HargaScreen({super.key});
 
   @override
+  State<HargaScreen> createState() => _HargaScreenState();
+}
+
+class _HargaScreenState extends State<HargaScreen> {
+  int _filter = 0;
+  static const _filters = ['Semua', 'Kertas', 'Plastik', 'Logam', 'Kaca'];
+
+  @override
   Widget build(BuildContext context) {
+    final shown = _filter == 0
+        ? _data
+        : _data.where((k) => k.$2 == _filters[_filter]).toList();
     return Scaffold(
-      appBar: backBar('Harga Pasar'),
+      appBar: subBar('Pusat Harga', 'Indeks dari transaksi 30 hari terakhir'),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
+        padding: const EdgeInsets.all(16),
         children: [
+          // Kartu ringkasan
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: AppColors.amberLight,
+              color: AppColors.merk700,
               borderRadius: BorderRadius.circular(16),
             ),
-            child: Row(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(Icons.info_outline, color: AppColors.amber),
-                const SizedBox(width: 10),
-                const Expanded(
-                  child: Text(
-                    'Harga acuan per kg. Bisa berbeda tiap pengepul & lokasi.',
-                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
-                  ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text('Rata-rata perubahan minggu ini',
+                          style: T.s.copyWith(color: AppColors.merk100)),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: AppColors.merk600,
+                        borderRadius: BorderRadius.circular(999),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(LucideIcons.trendingUp,
+                              size: 12, color: AppColors.merk50),
+                          const SizedBox(width: 4),
+                          Text('+1,4%',
+                              style: T.xs.copyWith(color: AppColors.merk50)),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text('21 jenis rongsok · 420 transaksi',
+                    style: T.m.copyWith(color: AppColors.putih)),
+                const SizedBox(height: 10),
+                const Sparkline(
+                  points: [3, 3.4, 3.1, 3.8, 3.6, 4.2, 4, 4.6, 4.4, 5, 4.9, 5.4],
+                  color: AppColors.nilai500,
+                  height: 36,
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 20),
-          for (final kategori in _data) ...[
-            Text(kategori.$1,
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
-            const SizedBox(height: 10),
-            for (final item in kategori.$2)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: AppCard(
-                  onTap: () => Navigator.pushNamed(context, R.cari),
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                  child: Row(
-                    children: [
-                      Text(item.$1, style: const TextStyle(fontSize: 24)),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(item.$2,
-                                style:
-                                    const TextStyle(fontWeight: FontWeight.w700)),
-                            Text('Acuan ${item.$3} / kg',
-                                style: const TextStyle(
-                                    color: AppColors.inkMuted, fontSize: 12)),
-                          ],
-                        ),
-                      ),
-                      const Icon(Icons.chevron_right, color: AppColors.inkMuted),
-                    ],
+          const SizedBox(height: 12),
+          const AppTextField(
+              hint: 'Cari jenis rongsok…', icon: LucideIcons.search),
+          const SizedBox(height: 12),
+          FilterChips(
+            items: _filters,
+            selected: _filter,
+            onSelected: (i) => setState(() => _filter = i),
+          ),
+          const SizedBox(height: 12),
+          for (final k in shown) ...[
+            AppCard(
+              padding: EdgeInsets.zero,
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+                    child: Row(
+                      children: [
+                        Text(k.$1, style: const TextStyle(fontSize: 14)),
+                        const SizedBox(width: 6),
+                        Expanded(child: Text(k.$2, style: T.bodyBold)),
+                        Text('${k.$3.length} jenis', style: T.s),
+                      ],
+                    ),
                   ),
-                ),
+                  for (final it in k.$3) ...[
+                    const Sep(),
+                    Padding(
+                      padding: const EdgeInsets.all(14),
+                      child: Row(
+                        children: [
+                          EmojiTile(it.$1, size: 40),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(it.$2, style: T.bodyBold),
+                                Text('Acuan ${it.$3}/kg', style: T.s),
+                              ],
+                            ),
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text(it.$4, style: T.bodyBold),
+                              TrendText(it.$5),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ],
               ),
-            const SizedBox(height: 10),
+            ),
+            const SizedBox(height: 12),
           ],
         ],
       ),
@@ -74,19 +138,20 @@ class HargaScreen extends StatelessWidget {
 }
 
 const _data = [
-  ('Plastik', [
-    ('🧴', 'Botol PET bening', 'Rp 4.000'),
-    ('🪣', 'Plastik keras', 'Rp 3.000'),
-    ('🛍', 'Kresek campur', 'Rp 1.000'),
+  ('📄', 'Kertas', [
+    ('📄', 'Kardus', 'Rp 1.800–2.600', 'Rp 2.400', 3.2),
+    ('📰', 'Koran', 'Rp 2.000–3.000', 'Rp 2.700', 0.8),
+    ('📚', 'HVS / Buku', 'Rp 2.500–3.500', 'Rp 3.100', 0.0),
   ]),
-  ('Kertas', [
-    ('📦', 'Kardus bekas', 'Rp 2.500'),
-    ('📰', 'Koran', 'Rp 2.000'),
-    ('📄', 'HVS / buku', 'Rp 3.500'),
+  ('🧴', 'Plastik', [
+    ('🧴', 'Botol PET', 'Rp 3.500–5.000', 'Rp 4.100', 1.8),
+    ('🪣', 'Plastik Keras', 'Rp 2.000–3.200', 'Rp 2.600', -2.1),
   ]),
-  ('Logam', [
-    ('🥫', 'Kaleng alumunium', 'Rp 12.000'),
-    ('🔩', 'Besi', 'Rp 5.000'),
-    ('🧵', 'Tembaga', 'Rp 75.000'),
+  ('🔩', 'Logam', [
+    ('🔩', 'Besi', 'Rp 4.500–6.000', 'Rp 5.300', -0.9),
+    ('🥫', 'Aluminium', 'Rp 10.000–14.000', 'Rp 12.000', 1.1),
+  ]),
+  ('🍾', 'Kaca', [
+    ('🍾', 'Botol Kaca', 'Rp 300–700', 'Rp 500', 0.0),
   ]),
 ];

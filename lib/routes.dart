@@ -26,5 +26,6 @@ class R {
   // Admin
   static const adDash = '/admin';
   static const verif = '/admin/verifikasi';
+  static const topup = '/admin/topup';
   static const sengketa = '/admin/sengketa';
 }

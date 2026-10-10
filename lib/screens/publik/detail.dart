@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../routes.dart';
 import '../../theme.dart';
 import '../../widgets.dart';
@@ -9,83 +10,191 @@ class DetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: backBar('Detail Pengepul'),
+      appBar: subBar('Lapak Hijau Karawang', 'Kec. Karawang Barat · 0,8 km'),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+        padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
         children: [
-          Row(
-            children: [
-              Container(
-                width: 64,
-                height: 64,
-                decoration: BoxDecoration(
-                  color: AppColors.emeraldLight,
-                  borderRadius: BorderRadius.circular(18),
-                ),
-                alignment: Alignment.center,
-                child: const Text('♻', style: TextStyle(fontSize: 30)),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+          // Kartu identitas + statistik
+          AppCard(
+            padding: const EdgeInsets.all(18),
+            child: Column(
+              children: [
+                Row(
                   children: [
-                    const Text('Bank Sampah Melati',
-                        style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.w800)),
-                    const SizedBox(height: 6),
-                    Row(
+                    const InitialAvatar('HK', size: 52),
+                    const SizedBox(width: 14),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: const [
-                        Icon(Icons.star, size: 16, color: AppColors.amber),
-                        SizedBox(width: 4),
-                        Text('4.9 (128 ulasan)',
-                            style: TextStyle(color: AppColors.inkMuted)),
+                        Text('Lapak Hijau Karawang',
+                            style: TextStyle(
+                                fontSize: 17, fontWeight: FontWeight.w800)),
+                        SizedBox(height: 4),
+                        VerifiedBadge(showText: true),
                       ],
                     ),
                   ],
                 ),
-              ),
-            ],
+                const SizedBox(height: 18),
+                Row(
+                  children: const [
+                    Expanded(child: _Stat('4,9 ★', 'Rating')),
+                    _VDivider(),
+                    Expanded(child: _Stat('128', 'Transaksi')),
+                    _VDivider(),
+                    Expanded(child: _Stat('2,4 t', 'Terkumpul')),
+                  ],
+                ),
+              ],
+            ),
           ),
-          const SizedBox(height: 16),
-          Row(
-            children: const [
-              Expanded(child: _Stat('0.6 km', 'Jarak')),
-              SizedBox(width: 12),
-              Expanded(child: _Stat('08.00–17.00', 'Jam buka')),
-              SizedBox(width: 12),
-              Expanded(child: _Stat('Gratis', 'Jemput')),
-            ],
+          const SizedBox(height: 14),
+          // Rekam jejak objektif
+          AppCard(
+            padding: const EdgeInsets.all(18),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: const [
+                    Text('Rekam jejak objektif',
+                        style: TextStyle(
+                            fontSize: 15, fontWeight: FontWeight.w800)),
+                    Spacer(),
+                    Icon(LucideIcons.info,
+                        size: 18, color: AppColors.inkMuted),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                const MetricBar(label: 'Kepatuhan harga', percent: 96),
+                const SizedBox(height: 14),
+                const MetricBar(label: 'Tepat waktu', percent: 91),
+                const SizedBox(height: 14),
+                const MetricBar(
+                    label: 'Tingkat penerimaan',
+                    percent: 88,
+                    color: AppColors.nilai500),
+              ],
+            ),
           ),
-          const SizedBox(height: 20),
-          const SectionHeader('Jenis diterima'),
-          const SizedBox(height: 12),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: const [
-              Pill('🧴 Plastik', bg: AppColors.emeraldLight, fg: AppColors.emeraldDark),
-              Pill('📦 Kertas', bg: AppColors.emeraldLight, fg: AppColors.emeraldDark),
-              Pill('🥫 Logam', bg: AppColors.emeraldLight, fg: AppColors.emeraldDark),
-              Pill('🍾 Kaca', bg: AppColors.emeraldLight, fg: AppColors.emeraldDark),
-            ],
-          ),
-          const SizedBox(height: 20),
-          const SectionHeader('Tentang'),
-          const SizedBox(height: 10),
-          const Text(
-            'Bank sampah terpercaya dengan timbangan tersertifikasi. '
-            'Harga mengikuti harga pasar, pembayaran tunai saat penjemputan.',
-            style: TextStyle(color: AppColors.inkMuted, height: 1.5),
-          ),
-          const SizedBox(height: 24),
-          PrimaryButton(
-            label: 'Ajukan Penjemputan',
-            icon: Icons.local_shipping_outlined,
-            onTap: () => Navigator.pushNamed(context, R.a1),
+          const SizedBox(height: 14),
+          // Harga beli per kg
+          AppCard(
+            padding: const EdgeInsets.all(18),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: const [
+                    Text('Harga beli per kg',
+                        style: TextStyle(
+                            fontSize: 15, fontWeight: FontWeight.w800)),
+                    Spacer(),
+                    Text('Diperbarui kemarin',
+                        style: TextStyle(
+                            color: AppColors.inkMuted, fontSize: 12)),
+                  ],
+                ),
+                const SizedBox(height: 14),
+                _HargaRow(
+                  emoji: '📦',
+                  name: 'Kardus',
+                  indeks: 'Indeks Rp 2.400 · sesuai',
+                  price: 'Rp 2.500',
+                  note: '▲ di atas indeks',
+                  noteColor: AppColors.emerald,
+                ),
+                const Divider(height: 24, color: AppColors.line),
+                _HargaRow(
+                  emoji: '🧴',
+                  name: 'Botol PET',
+                  indeks: 'Indeks Rp 4.100 · sesuai',
+                  price: 'Rp 4.000',
+                  note: 'sesuai',
+                  noteColor: AppColors.inkMuted,
+                ),
+              ],
+            ),
           ),
         ],
       ),
+      bottomNavigationBar: BottomActions(
+        child: Row(
+          children: [
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AppColors.slate200),
+              ),
+              child: IconButton(
+                onPressed: () {},
+                icon: const Icon(LucideIcons.messageCircle,
+                    size: 20, color: AppColors.merk700),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: PrimaryButton(
+                label: 'Ajukan Penjemputan',
+                onTap: () => Navigator.pushNamed(context, R.a1),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _HargaRow extends StatelessWidget {
+  final String emoji, name, indeks, price, note;
+  final Color noteColor;
+  const _HargaRow({
+    required this.emoji,
+    required this.name,
+    required this.indeks,
+    required this.price,
+    required this.note,
+    required this.noteColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Text(emoji, style: const TextStyle(fontSize: 22)),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(name,
+                  style: const TextStyle(
+                      fontWeight: FontWeight.w700, fontSize: 14.5)),
+              const SizedBox(height: 2),
+              Text(indeks,
+                  style: const TextStyle(
+                      color: AppColors.inkMuted, fontSize: 12)),
+            ],
+          ),
+        ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Text(price,
+                style: const TextStyle(
+                    fontWeight: FontWeight.w800, fontSize: 15)),
+            const SizedBox(height: 2),
+            Text(note,
+                style: TextStyle(
+                    color: noteColor,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600)),
+          ],
+        ),
+      ],
     );
   }
 }
@@ -97,23 +206,21 @@ class _Stat extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 14),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.line),
-      ),
-      child: Column(
-        children: [
-          Text(value,
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13)),
-          const SizedBox(height: 2),
-          Text(label,
-              style: const TextStyle(color: AppColors.inkMuted, fontSize: 12)),
-        ],
-      ),
+    return Column(
+      children: [
+        Text(value,
+            style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
+        const SizedBox(height: 3),
+        Text(label,
+            style: const TextStyle(color: AppColors.inkMuted, fontSize: 12)),
+      ],
     );
   }
+}
+
+class _VDivider extends StatelessWidget {
+  const _VDivider();
+  @override
+  Widget build(BuildContext context) =>
+      Container(width: 1, height: 32, color: AppColors.line);
 }

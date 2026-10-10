@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../theme.dart';
 import '../../widgets.dart';
 import 'shell.dart';
@@ -9,67 +10,114 @@ class DampakScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Dampak Lingkungan',
-            style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18)),
-      ),
+      appBar: subBar('Dampak & Lencana', 'Kontribusimu untuk lingkungan'),
       bottomNavigationBar: wargaNav(context, 4),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+        padding: const EdgeInsets.all(16),
         children: [
+          // Kartu total
           Container(
-            padding: const EdgeInsets.all(22),
+            padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [AppColors.emerald, AppColors.emeraldDark],
-              ),
               borderRadius: BorderRadius.circular(20),
+              gradient: const LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [AppColors.merk800, AppColors.merk700],
+              ),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                Text('🌍', style: TextStyle(fontSize: 34)),
-                SizedBox(height: 12),
-                Text('Kamu sudah menyelamatkan',
-                    style: TextStyle(color: Color(0xFFD1FAE5))),
-                SizedBox(height: 4),
-                Text('47 kg sampah',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 30,
-                        fontWeight: FontWeight.w800)),
-                Text('dari tempat pembuangan akhir',
-                    style: TextStyle(color: Color(0xFFD1FAE5))),
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text('Total diselamatkan dari TPA',
+                          style: T.s.copyWith(color: AppColors.merk100)),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: AppColors.nilai500,
+                        borderRadius: BorderRadius.circular(999),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(LucideIcons.trophy,
+                              size: 12, color: AppColors.slate900),
+                          const SizedBox(width: 4),
+                          Text('Peringkat #7',
+                              style: T.xs.copyWith(color: AppColors.slate900)),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Text('64,2 kg', style: T.xl.copyWith(color: AppColors.putih)),
+                const SizedBox(height: 14),
+                const Row(
+                  children: [
+                    Expanded(child: _MiniStat('112 kg', 'CO₂ dicegah')),
+                    SizedBox(width: 8),
+                    Expanded(child: _MiniStat('3', 'pohon setara')),
+                    SizedBox(width: 8),
+                    Expanded(child: _MiniStat('7', 'transaksi')),
+                  ],
+                ),
               ],
             ),
           ),
-          const SizedBox(height: 20),
-          Row(
+          const SizedBox(height: 16),
+          const SectionHeader('Lencana Saya', action: '3 dari 8'),
+          const SizedBox(height: 12),
+          GridView.count(
+            crossAxisCount: 3,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            mainAxisSpacing: 10,
+            crossAxisSpacing: 10,
+            childAspectRatio: 0.82,
             children: const [
-              Expanded(child: _Metric('🌳', '2', 'Pohon setara')),
-              SizedBox(width: 12),
-              Expanded(child: _Metric('💧', '310 L', 'Air dihemat')),
+              _Lencana(LucideIcons.leaf, 'Langkah Pertama', 'Transaksi pertama',
+                  true),
+              _Lencana(LucideIcons.recycle, 'Pahlawan Kardus', '50 kg kertas',
+                  true),
+              _Lencana(
+                  LucideIcons.star, 'Penjual Teladan', '5 ulasan baik', true),
+              _Lencana(LucideIcons.trophy, 'Top 10 Bulanan', 'Masuk peringkat',
+                  false),
+              _Lencana(
+                  LucideIcons.truck, 'Rutin Jemput', '10 transaksi', false),
+              _Lencana(LucideIcons.box, 'Serba Ada', '5 golongan', false),
             ],
           ),
-          const SizedBox(height: 12),
-          Row(
-            children: const [
-              Expanded(child: _Metric('⚡', '18 kWh', 'Energi dihemat')),
-              SizedBox(width: 12),
-              Expanded(child: _Metric('☁', '26 kg', 'CO₂ dikurangi')),
-            ],
-          ),
-          const SizedBox(height: 24),
-          const SectionHeader('Lencana kamu'),
-          const SizedBox(height: 12),
-          Wrap(
-            spacing: 10,
-            runSpacing: 10,
-            children: const [
-              _Badge('🥇', 'Pemula Hijau'),
-              _Badge('♻', 'Rajin Daur Ulang'),
-              _Badge('🔥', 'Streak 7 hari'),
-            ],
+          const SizedBox(height: 16),
+          AppCard(
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Menuju “Rutin Jemput”', style: T.bodyBold),
+                    Text('7/10',
+                        style: T.label.copyWith(color: AppColors.merk700)),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(999),
+                  child: const LinearProgressIndicator(
+                    value: 0.7,
+                    minHeight: 8,
+                    backgroundColor: AppColors.slate100,
+                    valueColor: AlwaysStoppedAnimation(AppColors.merk600),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -77,49 +125,79 @@ class DampakScreen extends StatelessWidget {
   }
 }
 
-class _Metric extends StatelessWidget {
-  final String emoji;
+class _MiniStat extends StatelessWidget {
   final String value;
   final String label;
-  const _Metric(this.emoji, this.value, this.label);
-  @override
-  Widget build(BuildContext context) {
-    return AppCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(emoji, style: const TextStyle(fontSize: 26)),
-          const SizedBox(height: 8),
-          Text(value,
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
-          Text(label,
-              style: const TextStyle(color: AppColors.inkMuted, fontSize: 13)),
-        ],
-      ),
-    );
-  }
-}
+  const _MiniStat(this.value, this.label);
 
-class _Badge extends StatelessWidget {
-  final String emoji;
-  final String label;
-  const _Badge(this.emoji, this.label);
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
       decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: AppColors.line),
+        color: AppColors.putih.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(12),
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(emoji, style: const TextStyle(fontSize: 18)),
-          const SizedBox(width: 8),
-          Text(label, style: const TextStyle(fontWeight: FontWeight.w700)),
+          Text(value, style: T.m.copyWith(color: AppColors.putih)),
+          Text(label, style: T.xs.copyWith(color: AppColors.merk100)),
         ],
+      ),
+    );
+  }
+}
+
+class _Lencana extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final bool earned;
+  const _Lencana(this.icon, this.title, this.subtitle, this.earned);
+
+  @override
+  Widget build(BuildContext context) {
+    return Opacity(
+      opacity: earned ? 1 : 0.55,
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: earned ? AppColors.putih : AppColors.slate100,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+              color: earned ? AppColors.slate200 : AppColors.slate100),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: earned ? AppColors.nilai100 : AppColors.slate200,
+              ),
+              child: Icon(icon,
+                  size: 20,
+                  color: earned ? AppColors.nilai700 : AppColors.slate400),
+            ),
+            const SizedBox(height: 8),
+            Text(title,
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: T.label.copyWith(height: 1.2)),
+            const SizedBox(height: 2),
+            Text(subtitle,
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: T.xs.copyWith(
+                    color: AppColors.slate500, fontWeight: FontWeight.w400)),
+          ],
+        ),
       ),
     );
   }

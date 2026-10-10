@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../routes.dart';
 import '../../theme.dart';
 import '../../widgets.dart';
@@ -9,127 +10,158 @@ class BerandaScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.putih,
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
           children: [
-            Row(
-              children: [
-                Container(
-                  width: 42,
-                  height: 42,
-                  decoration: BoxDecoration(
-                    color: AppColors.emerald,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Icon(Icons.recycling, color: Colors.white),
-                ),
-                const SizedBox(width: 10),
-                const Text('RongsokKu',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
-                const Spacer(),
-                TextButton(
-                  onPressed: () => Navigator.pushNamed(context, R.masuk),
-                  child: const Text('Masuk',
-                      style: TextStyle(
-                          color: AppColors.emerald, fontWeight: FontWeight.w700)),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            // Hero
-            Container(
-              padding: const EdgeInsets.all(22),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [AppColors.emerald, AppColors.emeraldDark],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.circular(22),
-              ),
+            // Bagian hero (putih)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Pill('♻ Jual rongsok jadi cuan',
-                      bg: Color(0x33FFFFFF), fg: Colors.white),
+                  Row(
+                    children: [
+                      const BrandLogo(),
+                      const Spacer(),
+                      SizedBox(
+                        height: 36,
+                        child: FilledButton(
+                          onPressed: () =>
+                              Navigator.pushNamed(context, R.masuk),
+                          style: FilledButton.styleFrom(
+                            backgroundColor: AppColors.merk50,
+                            foregroundColor: AppColors.merk800,
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10)),
+                            textStyle: T.label,
+                          ),
+                          child: const Text('Masuk'),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: AppColors.merk50,
+                      borderRadius: BorderRadius.circular(999),
+                      border: Border.all(color: AppColors.merk100),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(LucideIcons.zap,
+                            size: 12, color: AppColors.merk700),
+                        const SizedBox(width: 6),
+                        Text('Harga diperbarui dari transaksi nyata',
+                            style: T.xs.copyWith(color: AppColors.merk800)),
+                      ],
+                    ),
+                  ),
                   const SizedBox(height: 14),
-                  const Text(
-                    'Ubah sampahmu\njadi rupiah',
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 26,
-                        height: 1.2,
-                        fontWeight: FontWeight.w800),
+                  Text.rich(
+                    TextSpan(
+                      style: const TextStyle(
+                          fontSize: 32,
+                          height: 38 / 32,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: -0.8),
+                      children: const [
+                        TextSpan(
+                            text: 'Rongsok di rumah\n',
+                            style: TextStyle(color: AppColors.slate900)),
+                        TextSpan(
+                            text: 'punya harga.',
+                            style: TextStyle(color: AppColors.merk600)),
+                      ],
+                    ),
                   ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    'Hubungkan dengan pengepul terdekat, harga transparan, jemput ke rumah.',
-                    style: TextStyle(color: Color(0xFFE6FFF4), fontSize: 14),
+                  const SizedBox(height: 12),
+                  Text(
+                    'Bandingkan harga antar pengepul di sekitarmu, pilih yang '
+                    'paling cocok, lalu barangmu dijemput langsung ke rumah. '
+                    'Dibayar tunai di tempat.',
+                    style: T.body.copyWith(color: AppColors.slate600),
                   ),
-                  const SizedBox(height: 18),
+                  const SizedBox(height: 20),
                   PrimaryButton(
-                    label: 'Masuk',
-                    icon: Icons.login,
-                    onTap: () => Navigator.pushNamed(context, R.masuk),
+                    label: 'Cari Pengepul Terdekat',
+                    onTap: () => Navigator.pushNamed(context, R.cari),
+                  ),
+                  const SizedBox(height: 10),
+                  OutlineButton(
+                    label: 'Lihat Harga Pasar',
+                    onTap: () => Navigator.pushNamed(context, R.harga),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 20),
-            Row(
-              children: [
-                Expanded(
-                  child: _ActionTile(
-                    icon: Icons.location_on_outlined,
-                    label: 'Cari Pengepul\nTerdekat',
-                    onTap: () => Navigator.pushNamed(context, R.cari),
-                  ),
-                ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: _ActionTile(
-                    icon: Icons.trending_up,
-                    label: 'Lihat Harga\nPasar',
-                    onTap: () => Navigator.pushNamed(context, R.harga),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-            SectionHeader('Harga hari ini',
-                action: 'Lihat semua',
-                onAction: () => Navigator.pushNamed(context, R.harga)),
-            const SizedBox(height: 12),
-            for (final h in _hargaPreview)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: AppCard(
-                  onTap: () => Navigator.pushNamed(context, R.harga),
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                  child: Row(
+            // Bagian bawah (slate/50)
+            Container(
+              color: AppColors.slate50,
+              padding: const EdgeInsets.fromLTRB(16, 20, 16, 24),
+              child: Column(
+                children: [
+                  const Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(h.$1, style: const TextStyle(fontSize: 22)),
-                      const SizedBox(width: 12),
                       Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(h.$2,
-                                style: const TextStyle(fontWeight: FontWeight.w700)),
-                            const Text('per kg',
-                                style: TextStyle(
-                                    color: AppColors.inkMuted, fontSize: 12)),
-                          ],
-                        ),
-                      ),
-                      Text(h.$3,
-                          style: const TextStyle(
-                              fontWeight: FontWeight.w800, color: AppColors.emerald)),
+                          child: _Stat('12.480 kg', 'diselamatkan dari TPA')),
+                      SizedBox(width: 12),
+                      Expanded(child: _Stat('420', 'transaksi selesai')),
+                      SizedBox(width: 12),
+                      Expanded(child: _Stat('8', 'pengepul terverifikasi')),
                     ],
                   ),
-                ),
+                  const SizedBox(height: 20),
+                  AppCard(
+                    onTap: () => Navigator.pushNamed(context, R.harga),
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('INDEKS RONGSOKKU',
+                                      style: T.xs.copyWith(
+                                          color: AppColors.merk700,
+                                          letterSpacing: 0.6)),
+                                  Text('Dari transaksi 30 hari terakhir',
+                                      style: T.s),
+                                ],
+                              ),
+                            ),
+                            Container(
+                              width: 6,
+                              height: 6,
+                              decoration: const BoxDecoration(
+                                  color: AppColors.merk500,
+                                  shape: BoxShape.circle),
+                            ),
+                            const SizedBox(width: 6),
+                            Text('Aktif',
+                                style:
+                                    T.label.copyWith(color: AppColors.merk700)),
+                          ],
+                        ),
+                        for (final it in _indeks) ...[
+                          const SizedBox(height: 12),
+                          const Sep(),
+                          const SizedBox(height: 12),
+                          _IndeksRow(it),
+                        ],
+                      ],
+                    ),
+                  ),
+                ],
               ),
+            ),
           ],
         ),
       ),
@@ -137,40 +169,57 @@ class BerandaScreen extends StatelessWidget {
   }
 }
 
-const _hargaPreview = [
-  ('🧴', 'Botol Plastik PET', 'Rp 4.000'),
-  ('📦', 'Kardus Bekas', 'Rp 2.500'),
-  ('🥫', 'Kaleng Alumunium', 'Rp 12.000'),
+const _indeks = [
+  ('📄', 'Kardus', '34 transaksi', 'Rp 2.400', 3.2),
+  ('🧴', 'Botol PET', '51 transaksi', 'Rp 4.100', 1.8),
+  ('🔩', 'Besi', '27 transaksi', 'Rp 5.300', -0.9),
 ];
 
-class _ActionTile extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
-  const _ActionTile({required this.icon, required this.label, required this.onTap});
+class _IndeksRow extends StatelessWidget {
+  final (String, String, String, String, double) data;
+  const _IndeksRow(this.data);
 
   @override
   Widget build(BuildContext context) {
-    return AppCard(
-      onTap: onTap,
-      padding: const EdgeInsets.all(18),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              color: AppColors.emeraldLight,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(icon, color: AppColors.emerald),
+    return Row(
+      children: [
+        EmojiTile(data.$1, size: 40),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(data.$2, style: T.bodyBold),
+              Text(data.$3, style: T.s),
+            ],
           ),
-          const SizedBox(height: 12),
-          Text(label,
-              style: const TextStyle(fontWeight: FontWeight.w700, height: 1.2)),
-        ],
-      ),
+        ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Text(data.$4, style: T.bodyBold),
+            TrendText(data.$5),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _Stat extends StatelessWidget {
+  final String value;
+  final String label;
+  const _Stat(this.value, this.label);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(value, style: T.l),
+        const SizedBox(height: 2),
+        Text(label, style: T.s),
+      ],
     );
   }
 }

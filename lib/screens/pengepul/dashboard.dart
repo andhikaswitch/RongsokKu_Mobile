@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../routes.dart';
 import '../../theme.dart';
 import '../../widgets.dart';
@@ -10,189 +11,145 @@ class PengepulDashboard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: panelBar('Dashboard', 'Lapak Hijau Karawang'),
       bottomNavigationBar: pengepulNav(context, 0),
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
-          children: [
-            Row(
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          // Kartu saldo deposit
+          Container(
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
+              color: AppColors.slate900,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const CircleAvatar(
-                  radius: 22,
-                  backgroundColor: AppColors.emeraldLight,
-                  child: Text('🚛', style: TextStyle(fontSize: 20)),
-                ),
-                const SizedBox(width: 12),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    Text('Pengepul Pak Budi',
-                        style:
-                            TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
-                    Text('⭐ 4.7 • Aktif',
-                        style:
-                            TextStyle(color: AppColors.inkMuted, fontSize: 13)),
+                Row(
+                  children: [
+                    const Icon(LucideIcons.wallet,
+                        size: 16, color: AppColors.slate400),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text('Saldo deposit',
+                          style: T.s.copyWith(color: AppColors.slate400)),
+                    ),
+                    Pill('Aktif menerima',
+                        bg: AppColors.merk600,
+                        fg: AppColors.merk50,
+                        fontSize: 10),
                   ],
                 ),
-                const Spacer(),
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.notifications_none_rounded),
+                const SizedBox(height: 8),
+                Text('Rp 148.500', style: T.xl.copyWith(color: AppColors.putih)),
+                const SizedBox(height: 6),
+                Text(
+                  'Minimum Rp 50.000 · komisi 5% dipotong saat transaksi selesai',
+                  style: T.s.copyWith(color: AppColors.slate400),
+                ),
+                const SizedBox(height: 14),
+                Row(
+                  children: [
+                    Expanded(
+                      child: PrimaryButton.amber(
+                        label: 'Isi Saldo',
+                        onTap: () => Navigator.pushNamed(context, R.dompet),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: PrimaryButton(
+                        label: 'Riwayat',
+                        color: AppColors.merk50,
+                        fg: AppColors.merk800,
+                        onTap: () => Navigator.pushNamed(context, R.dompet),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
-            const SizedBox(height: 16),
-            // Saldo + aksi
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [AppColors.emerald, AppColors.emeraldDark],
-                ),
-                borderRadius: BorderRadius.circular(20),
+          ),
+          const SizedBox(height: 16),
+          const Row(
+            children: [
+              Expanded(
+                child: _StatCard(
+                    icon: LucideIcons.chartLine,
+                    value: 'Rp 2,46 jt',
+                    label: 'Omzet 14 hari'),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text('Saldo dompet',
-                      style: TextStyle(color: Color(0xFFD1FAE5))),
-                  const SizedBox(height: 6),
-                  const Text('Rp 1.250.000',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 28,
-                          fontWeight: FontWeight.w800)),
-                  const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _MiniBtn(
-                          icon: Icons.add,
-                          label: 'Isi Saldo',
-                          onTap: () => Navigator.pushNamed(context, R.dompet),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: _MiniBtn(
-                          icon: Icons.history,
-                          label: 'Riwayat',
-                          onTap: () => Navigator.pushNamed(context, R.dompet),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+              SizedBox(width: 10),
+              Expanded(
+                child: _StatCard(
+                    icon: LucideIcons.scale,
+                    value: '842 kg',
+                    label: 'Ditimbang 14 hari',
+                    amber: true),
               ),
-            ),
-            const SizedBox(height: 20),
-            Row(
-              children: const [
-                Expanded(child: _Stat('8', 'Permintaan baru')),
-                SizedBox(width: 12),
-                Expanded(child: _Stat('126 kg', 'Minggu ini')),
-              ],
-            ),
-            const SizedBox(height: 24),
-            SectionHeader('Permintaan masuk',
-                action: 'Semua',
-                onAction: () => Navigator.pushNamed(context, R.pMasuk)),
-            const SizedBox(height: 12),
-            for (final r in _permintaan)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: AppCard(
+            ],
+          ),
+          const SizedBox(height: 16),
+          SectionHeader('Permintaan Masuk',
+              action: '3 baru',
+              onAction: () => goTab(context, R.pMasuk, R.pDash)),
+          const SizedBox(height: 12),
+          RequestCard(
+            code: 'RSK-00133',
+            status: 'Menunggu Respons',
+            tone: Tone.orange,
+            title: 'Siti Aminah · 0,8 km',
+            schedule: 'Sab, 4 Okt · 09.00–11.00',
+            summary: '3 jenis · ±18 kg',
+            amount: '± Rp 42.600',
+            onTap: () => Navigator.pushNamed(context, R.timbang),
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              Expanded(child: OutlineButton(label: 'Tolak', onTap: () {})),
+              const SizedBox(width: 10),
+              Expanded(
+                flex: 2,
+                child: PrimaryButton(
+                  label: 'Terima & Jadwalkan',
                   onTap: () => Navigator.pushNamed(context, R.timbang),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Text(r.$1, style: const TextStyle(fontSize: 22)),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(r.$2,
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.w700)),
-                                Text(r.$3,
-                                    style: const TextStyle(
-                                        color: AppColors.inkMuted, fontSize: 13)),
-                              ],
-                            ),
-                          ),
-                          const Icon(Icons.chevron_right,
-                              color: AppColors.inkMuted),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      PrimaryButton(
-                        label: 'Terima & Jadwalkan',
-                        onTap: () => Navigator.pushNamed(context, R.timbang),
-                      ),
-                    ],
-                  ),
                 ),
               ),
-          ],
-        ),
+            ],
+          ),
+        ],
       ),
     );
   }
 }
 
-const _permintaan = [
-  ('🧴', 'Botol plastik ±5 kg', 'Andhika • 0.6 km'),
-  ('📦', 'Kardus ±8 kg', 'Sari • 1.1 km'),
-];
-
-class _MiniBtn extends StatelessWidget {
+class _StatCard extends StatelessWidget {
   final IconData icon;
-  final String label;
-  final VoidCallback onTap;
-  const _MiniBtn({required this.icon, required this.label, required this.onTap});
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        height: 44,
-        decoration: BoxDecoration(
-          color: const Color(0x33FFFFFF),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 18, color: Colors.white),
-            const SizedBox(width: 6),
-            Text(label,
-                style: const TextStyle(
-                    color: Colors.white, fontWeight: FontWeight.w700)),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _Stat extends StatelessWidget {
   final String value;
   final String label;
-  const _Stat(this.value, this.label);
+  final bool amber;
+  const _StatCard(
+      {required this.icon,
+      required this.value,
+      required this.label,
+      this.amber = false});
+
   @override
   Widget build(BuildContext context) {
     return AppCard(
+      padding: const EdgeInsets.all(14),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(value,
-              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800)),
-          Text(label,
-              style: const TextStyle(color: AppColors.inkMuted, fontSize: 13)),
+          IconBox(icon,
+              bg: amber ? AppColors.nilai50 : AppColors.merk50,
+              fg: amber ? AppColors.nilai700 : AppColors.merk700),
+          const SizedBox(height: 8),
+          Text(value, style: T.l),
+          const SizedBox(height: 2),
+          Text(label, style: T.s),
         ],
       ),
     );

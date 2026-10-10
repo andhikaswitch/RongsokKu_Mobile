@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../routes.dart';
 import '../../theme.dart';
 import '../../widgets.dart';
-import 'shell.dart';
 
 class RincianScreen extends StatelessWidget {
   const RincianScreen({super.key});
@@ -10,96 +10,181 @@ class RincianScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Rincian Permintaan',
-            style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18)),
-      ),
-      bottomNavigationBar: wargaNav(context, 2),
+      appBar: subBar('RSK-00127', 'Pengepul Jaya'),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+        padding: const EdgeInsets.all(16),
         children: [
-          // Status
-          Container(
-            padding: const EdgeInsets.all(18),
-            decoration: BoxDecoration(
-              color: AppColors.amberLight,
-              borderRadius: BorderRadius.circular(18),
-            ),
-            child: Row(
-              children: [
-                const Icon(Icons.local_shipping, color: AppColors.amber, size: 30),
-                const SizedBox(width: 14),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    Text('Sedang dijemput',
-                        style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
-                    Text('Pak Budi dalam perjalanan',
-                        style: TextStyle(color: AppColors.inkMuted, fontSize: 13)),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 20),
-          const SectionHeader('Barang'),
-          const SizedBox(height: 12),
-          for (final b in _barang)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 10),
-              child: AppCard(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                child: Row(
-                  children: [
-                    Text(b.$1, style: const TextStyle(fontSize: 22)),
-                    const SizedBox(width: 12),
-                    Expanded(
-                        child: Text(b.$2,
-                            style: const TextStyle(fontWeight: FontWeight.w700))),
-                    Text(b.$3,
-                        style:
-                            const TextStyle(color: AppColors.inkMuted, fontSize: 13)),
-                  ],
-                ),
-              ),
-            ),
-          const SizedBox(height: 12),
+          // Status permintaan
           AppCard(
             child: Column(
               children: [
-                _baris('Berat total', '13 kg'),
-                const Divider(height: 24, color: AppColors.line),
-                _baris('Estimasi nilai', 'Rp 40.000', tebal: true),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Status permintaan', style: T.bodyBold),
+                    const StatusPill('Menunggu Konfirmasi', tone: Tone.violet),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                const _Tracker(
+                  labels: [
+                    'Diajukan',
+                    'Dijadwal',
+                    'Dijemput',
+                    'Ditimbang',
+                    'Selesai'
+                  ],
+                  current: 4,
+                ),
               ],
             ),
           ),
-          const SizedBox(height: 20),
-          PrimaryButton(
-            label: 'Konfirmasi & Terima Tunai',
-            icon: Icons.payments_outlined,
-            onTap: () => Navigator.pushNamed(context, R.dampak),
+          const SizedBox(height: 12),
+          // Hasil timbang
+          AppCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const IconBox(LucideIcons.scale,
+                        bg: AppColors.violet50, fg: AppColors.violet600),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Hasil timbang di tempat', style: T.bodyBold),
+                          Text('Hari ini, 10.12 · oleh Pak Darto', style: T.s),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 14),
+                const _TimbangRow('Kardus', 'est. 10 kg → 8,6 kg · × Rp 2.500',
+                    'Rp 21.500'),
+                const SizedBox(height: 12),
+                const _TimbangRow('Botol PET',
+                    'est. 2 kg → 2,8 kg · × Rp 4.000', 'Rp 11.200'),
+                const SizedBox(height: 14),
+                const Sep(),
+                const SizedBox(height: 14),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Total dibayar tunai',
+                        style: T.body.copyWith(color: AppColors.slate600)),
+                    Text('Rp 32.700',
+                        style: T.l.copyWith(color: AppColors.nilai700)),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          const InfoBox(
+            icon: LucideIcons.triangleAlert,
+            title: 'Berat Kardus 14% di bawah estimasi',
+            text: 'Ini hanya peringatan. Cek kembali timbangan bersama '
+                'pengepul sebelum konfirmasi.',
+            textColor: AppColors.slate600,
           ),
         ],
       ),
+      bottomNavigationBar: BottomActions(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            PrimaryButton(
+              label: 'Konfirmasi & Terima Tunai',
+              onTap: () => Navigator.pushNamed(context, R.dampak),
+            ),
+            const SizedBox(height: 10),
+            OutlineButton(
+              label: 'Ajukan Sengketa',
+              color: AppColors.rose600,
+              onTap: () {},
+            ),
+          ],
+        ),
+      ),
     );
   }
+}
 
-  Widget _baris(String k, String v, {bool tebal = false}) {
+class _TimbangRow extends StatelessWidget {
+  final String name;
+  final String detail;
+  final String total;
+  const _TimbangRow(this.name, this.detail, this.total);
+
+  @override
+  Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(k, style: const TextStyle(color: AppColors.inkMuted)),
-        Text(v,
-            style: TextStyle(
-                fontWeight: FontWeight.w800,
-                fontSize: tebal ? 18 : 14,
-                color: tebal ? AppColors.emerald : AppColors.ink)),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(name, style: T.bodyBold),
+              const SizedBox(height: 2),
+              Text(detail, style: T.s),
+            ],
+          ),
+        ),
+        Text(total, style: T.bodyBold),
       ],
     );
   }
 }
 
-const _barang = [
-  ('🧴', 'Botol plastik PET', '5 kg'),
-  ('📦', 'Kardus bekas', '8 kg'),
-];
+/// Pelacak status 5 langkah; langkah aktif berwarna violet.
+class _Tracker extends StatelessWidget {
+  final List<String> labels;
+  final int current;
+  const _Tracker({required this.labels, required this.current});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        for (int i = 1; i <= labels.length; i++)
+          Expanded(
+            child: Column(
+              children: [
+                Container(
+                  width: 28,
+                  height: 28,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: i < current
+                        ? AppColors.merk600
+                        : i == current
+                            ? AppColors.violet600
+                            : AppColors.slate100,
+                  ),
+                  child: i < current
+                      ? const Icon(LucideIcons.check,
+                          size: 14, color: AppColors.putih)
+                      : Text('$i',
+                          style: T.label.copyWith(
+                              color: i == current
+                                  ? AppColors.putih
+                                  : AppColors.slate400)),
+                ),
+                const SizedBox(height: 6),
+                Text(labels[i - 1],
+                    style: T.xs.copyWith(
+                        color: i <= current
+                            ? AppColors.slate700
+                            : AppColors.slate400)),
+              ],
+            ),
+          ),
+      ],
+    );
+  }
+}

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../routes.dart';
 import '../../theme.dart';
 import '../../widgets.dart';
@@ -10,122 +11,139 @@ class WargaDashboard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: panelBar('Dashboard', 'Halo, Siti Aminah 👋'),
       bottomNavigationBar: wargaNav(context, 0),
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
-          children: [
-            Row(
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          // Kartu sapaan
+          Container(
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              gradient: const LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [AppColors.merk700, Color(0xFF069669)],
+                stops: [0, 0.625],
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const CircleAvatar(
-                  radius: 22,
-                  backgroundColor: AppColors.emeraldLight,
-                  child: Text('👤', style: TextStyle(fontSize: 20)),
-                ),
-                const SizedBox(width: 12),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    Text('Halo, Andhika 👋',
-                        style:
-                            TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
-                    Text('Warga • Cikampek',
-                        style:
-                            TextStyle(color: AppColors.inkMuted, fontSize: 13)),
+                Text('Total diterima bulan ini',
+                    style: T.s.copyWith(color: AppColors.merk100)),
+                const SizedBox(height: 12),
+                Text('Rp 186.400', style: T.xl.copyWith(color: AppColors.putih)),
+                const SizedBox(height: 12),
+                const Row(
+                  children: [
+                    _MiniPill('7 transaksi'),
+                    SizedBox(width: 8),
+                    _MiniPill('64 kg rongsok'),
                   ],
                 ),
-                const Spacer(),
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.notifications_none_rounded),
+                const SizedBox(height: 12),
+                PrimaryButton.amber(
+                  label: 'Ajukan Penjemputan',
+                  onTap: () => Navigator.pushNamed(context, R.a1),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
-            // Saldo poin
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [AppColors.emerald, AppColors.emeraldDark],
-                ),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text('Total penghasilan',
-                      style: TextStyle(color: Color(0xFFD1FAE5))),
-                  const SizedBox(height: 6),
-                  const Text('Rp 184.500',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 28,
-                          fontWeight: FontWeight.w800)),
-                  const SizedBox(height: 4),
-                  const Text('12 kg terjual • 3 penjemputan',
-                      style: TextStyle(color: Color(0xFFD1FAE5), fontSize: 13)),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
-            PrimaryButton(
-              label: 'Ajukan Penjemputan',
-              icon: Icons.local_shipping_outlined,
-              onTap: () => Navigator.pushNamed(context, R.a1),
-            ),
-            const SizedBox(height: 24),
-            SectionHeader('Permintaan aktif',
-                action: 'Semua',
-                onAction: () => Navigator.pushNamed(context, R.wRinci)),
-            const SizedBox(height: 12),
-            for (final r in _permintaan)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: AppCard(
-                  onTap: () => Navigator.pushNamed(context, R.wRinci),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 48,
-                        height: 48,
-                        decoration: BoxDecoration(
-                          color: AppColors.emeraldLight,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        alignment: Alignment.center,
-                        child: Text(r.$1, style: const TextStyle(fontSize: 22)),
-                      ),
-                      const SizedBox(width: 14),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(r.$2,
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.w700)),
-                            const SizedBox(height: 2),
-                            Text(r.$3,
-                                style: const TextStyle(
-                                    color: AppColors.inkMuted, fontSize: 13)),
-                          ],
-                        ),
-                      ),
-                      Pill(r.$4, bg: r.$5, fg: r.$6),
-                    ],
-                  ),
+          ),
+          const SizedBox(height: 16),
+          SectionHeader('Permintaan Berjalan',
+              action: 'Lihat semua',
+              onAction: () => Navigator.pushNamed(context, R.wRinci)),
+          const SizedBox(height: 16),
+          RequestCard(
+            code: 'RSK-00131',
+            status: 'Dijadwalkan',
+            tone: Tone.sky,
+            title: 'Lapak Hijau Karawang',
+            schedule: 'Sab, 4 Okt · 09.00–11.00',
+            summary: '3 jenis · ±18 kg',
+            amount: '± Rp 42.600',
+            onTap: () => Navigator.pushNamed(context, R.wRinci),
+          ),
+          const SizedBox(height: 16),
+          RequestCard(
+            code: 'RSK-00127',
+            status: 'Menunggu Konfirmasi',
+            tone: Tone.violet,
+            title: 'Pengepul Jaya',
+            schedule: 'Hari ini · ditimbang 10.12',
+            summary: '2 jenis · 11,4 kg',
+            amount: 'Rp 32.700',
+            onTap: () => Navigator.pushNamed(context, R.wRinci),
+          ),
+          const SizedBox(height: 16),
+          const SectionHeader('Dampak Lingkunganmu'),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: _DampakStat(
+                  icon: LucideIcons.recycle,
+                  value: '64 kg',
+                  label: 'diselamatkan',
+                  onTap: () => Navigator.pushNamed(context, R.dampak),
                 ),
               ),
-          ],
-        ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: _DampakStat(
+                  icon: LucideIcons.leaf,
+                  value: '112 kg',
+                  label: 'CO₂ dicegah',
+                  onTap: () => Navigator.pushNamed(context, R.dampak),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
 }
 
-const _permintaan = [
-  ('🧴', 'Botol plastik ±5 kg', 'Bank Sampah Melati', 'Dijemput',
-      AppColors.amberLight, AppColors.amber),
-  ('📦', 'Kardus ±8 kg', 'Pengepul Pak Budi', 'Menunggu',
-      Color(0xFFE0F2FE), Color(0xFF0284C7)),
-];
+class _MiniPill extends StatelessWidget {
+  final String text;
+  const _MiniPill(this.text);
+  @override
+  Widget build(BuildContext context) => Pill(text,
+      bg: AppColors.merk600,
+      fg: AppColors.merk50,
+      fontSize: 10,
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4));
+}
+
+class _DampakStat extends StatelessWidget {
+  final IconData icon;
+  final String value;
+  final String label;
+  final VoidCallback onTap;
+  const _DampakStat(
+      {required this.icon,
+      required this.value,
+      required this.label,
+      required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return AppCard(
+      onTap: onTap,
+      padding: const EdgeInsets.all(14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          IconBox(icon),
+          const SizedBox(height: 8),
+          Text(value, style: T.l),
+          const SizedBox(height: 8),
+          Text(label, style: T.s),
+        ],
+      ),
+    );
+  }
+}

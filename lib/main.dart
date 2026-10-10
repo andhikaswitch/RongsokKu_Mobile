@@ -20,6 +20,7 @@ import 'screens/pengepul/dompet.dart';
 import 'screens/admin/dashboard.dart';
 import 'screens/admin/verifikasi.dart';
 import 'screens/admin/sengketa.dart';
+import 'screens/admin/topup.dart';
 
 void main() {
   runApp(const RongsokKuApp());
@@ -56,6 +57,7 @@ class RongsokKuApp extends StatelessWidget {
         R.adDash: (_) => const AdminDashboard(),
         R.verif: (_) => const VerifikasiScreen(),
         R.sengketa: (_) => const SengketaScreen(),
+        R.topup: (_) => const TopupScreen(),
       },
     );
   }
