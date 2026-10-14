@@ -3,6 +3,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../../routes.dart';
 import '../../theme.dart';
 import '../../widgets.dart';
+import 'permintaan.dart' show contohPermintaan;
 import 'shell.dart';
 
 class WargaDashboard extends StatelessWidget {
@@ -54,7 +55,7 @@ class WargaDashboard extends StatelessWidget {
           const SizedBox(height: 16),
           SectionHeader('Permintaan Berjalan',
               action: 'Lihat semua',
-              onAction: () => Navigator.pushNamed(context, R.wRinci)),
+              onAction: () => goTab(context, R.wPermintaan, R.wDash)),
           const SizedBox(height: 16),
           RequestCard(
             code: 'RSK-00131',
@@ -64,7 +65,8 @@ class WargaDashboard extends StatelessWidget {
             schedule: 'Sab, 4 Okt · 09.00–11.00',
             summary: '3 jenis · ±18 kg',
             amount: '± Rp 42.600',
-            onTap: () => Navigator.pushNamed(context, R.wRinci),
+            onTap: () => Navigator.pushNamed(context, R.wPermintaanDetail,
+                arguments: contohPermintaan()[1]),
           ),
           const SizedBox(height: 16),
           RequestCard(

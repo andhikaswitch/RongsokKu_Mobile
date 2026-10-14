@@ -11,7 +11,7 @@ const _items = [
   NavItem(LucideIcons.menu, 'Lainnya'),
 ];
 
-const _routes = [R.pDash, R.pMasuk, R.terbuka, R.harga, R.dompet];
+const _routes = [R.pDash, R.pMasuk, R.terbuka, R.harga, R.pMenu];
 
 /// Bottom nav untuk area Pengepul.
 Widget pengepulNav(BuildContext context, int current) {

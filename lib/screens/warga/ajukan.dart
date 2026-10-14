@@ -306,17 +306,6 @@ const _barang = [
   ('📚', 'HVS / Buku', 3200),
 ];
 
-/// Format "Rp 38.500".
-String rupiah(int v) {
-  final s = v.toString();
-  final buf = StringBuffer();
-  for (int i = 0; i < s.length; i++) {
-    if (i > 0 && (s.length - i) % 3 == 0) buf.write('.');
-    buf.write(s[i]);
-  }
-  return 'Rp $buf';
-}
-
 class _BarangRow extends StatelessWidget {
   final String emoji;
   final String name;
@@ -414,6 +403,72 @@ class Ajukan3Screen extends StatefulWidget {
 class _Ajukan3State extends State<Ajukan3Screen> {
   int _hari = 2;
   int _jam = 1;
+  int _alamat = 0;
+
+  static const _alamatList = [
+    ('Rumah',
+        'Jl. Tuparev No. 21, RT 03/RW 05, dekat Masjid Al-Ikhlas, Adiarsa Timur, Karawang Barat'),
+    ('Warung', 'Jl. Kertabumi No. 5, Karawang Kulon, Karawang Barat'),
+  ];
+
+  Future<void> _pilihAlamat() async {
+    final r = await showModalBottomSheet<int>(
+      context: context,
+      backgroundColor: AppColors.putih,
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (ctx) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Pilih alamat jemput', style: T.m),
+              const SizedBox(height: 12),
+              for (int i = 0; i < _alamatList.length; i++) ...[
+                AppCard(
+                  onTap: () => Navigator.pop(ctx, i),
+                  color: i == _alamat ? AppColors.merk50 : AppColors.putih,
+                  borderColor:
+                      i == _alamat ? AppColors.merk500 : AppColors.slate200,
+                  padding: const EdgeInsets.all(12),
+                  child: Row(
+                    children: [
+                      const Icon(LucideIcons.mapPin,
+                          size: 18, color: AppColors.merk600),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(_alamatList[i].$1, style: T.bodyBold),
+                            Text(_alamatList[i].$2, style: T.s),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 8),
+              ],
+              const SizedBox(height: 4),
+              OutlineButton(
+                label: 'Kelola Alamat',
+                icon: LucideIcons.settings2,
+                color: AppColors.merk700,
+                onTap: () {
+                  Navigator.pop(ctx);
+                  Navigator.pushNamed(context, R.wProfil);
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+    if (r != null) setState(() => _alamat = r);
+  }
 
   static const _hariList = [
     ('Kam', '2'),
@@ -448,15 +503,19 @@ class _Ajukan3State extends State<Ajukan3Screen> {
                     const Icon(LucideIcons.mapPin,
                         size: 18, color: AppColors.merk600),
                     const SizedBox(width: 8),
-                    Expanded(child: Text('Alamat jemput', style: T.bodyBold)),
-                    Text('Ubah',
-                        style: T.label.copyWith(color: AppColors.merk700)),
+                    Expanded(
+                        child: Text('Alamat jemput · ${_alamatList[_alamat].$1}',
+                            style: T.bodyBold)),
+                    GestureDetector(
+                      onTap: _pilihAlamat,
+                      child: Text('Ubah',
+                          style: T.label.copyWith(color: AppColors.merk700)),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  'Jl. Tuparev No. 21, RT 03/RW 05, dekat Masjid Al-Ikhlas, '
-                  'Adiarsa Timur, Karawang Barat',
+                  _alamatList[_alamat].$2,
                   style: T.s.copyWith(color: AppColors.slate600),
                 ),
               ],
@@ -583,8 +642,13 @@ class _Ajukan3State extends State<Ajukan3Screen> {
             const SizedBox(height: 10),
             PrimaryButton(
               label: 'Kirim Permintaan',
-              onTap: () => Navigator.pushNamedAndRemoveUntil(
-                  context, R.wDash, (r) => r.settings.name == R.beranda),
+              onTap: () {
+                toast(context, 'Permintaan terkirim ke Lapak Hijau Karawang');
+                final nav = Navigator.of(context);
+                nav.popUntil(
+                    (r) => r.settings.name == R.wDash || r.isFirst);
+                nav.pushNamed(R.wPermintaan);
+              },
             ),
           ],
         ),

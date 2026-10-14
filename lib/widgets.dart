@@ -486,8 +486,13 @@ class AppTextField extends StatelessWidget {
   final IconData? icon;
   final bool obscure;
   final String? suffix;
+  final String? prefix;
   final TextAlign align;
   final bool focused;
+  final TextEditingController? controller;
+  final TextInputType? keyboardType;
+  final int maxLines;
+  final ValueChanged<String>? onChanged;
   const AppTextField({
     super.key,
     required this.hint,
@@ -495,8 +500,13 @@ class AppTextField extends StatelessWidget {
     this.icon,
     this.obscure = false,
     this.suffix,
+    this.prefix,
     this.align = TextAlign.start,
     this.focused = false,
+    this.controller,
+    this.keyboardType,
+    this.maxLines = 1,
+    this.onChanged,
   });
 
   @override
@@ -505,34 +515,544 @@ class AppTextField extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: c, width: w),
         );
-    return SizedBox(
-      height: 48,
-      child: TextFormField(
-        initialValue: value,
-        obscureText: obscure,
-        textAlign: align,
-        style: T.body,
-        decoration: InputDecoration(
-          hintText: hint,
-          hintStyle: T.body.copyWith(color: AppColors.slate400),
-          isDense: true,
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-          prefixIcon: icon == null
-              ? null
-              : Icon(icon, size: 18, color: AppColors.slate400),
-          suffixText: suffix,
-          suffixStyle: T.s.copyWith(color: AppColors.slate400),
-          filled: true,
-          fillColor: AppColors.putih,
-          enabledBorder: focused
-              ? b(AppColors.merk500, 1.5)
-              : b(AppColors.slate200),
-          focusedBorder: b(AppColors.merk500, 1.5),
+    final field = TextFormField(
+      controller: controller,
+      initialValue: controller == null ? value : null,
+      obscureText: obscure,
+      textAlign: align,
+      keyboardType: keyboardType,
+      maxLines: obscure ? 1 : maxLines,
+      onChanged: onChanged,
+      style: T.body,
+      decoration: InputDecoration(
+        hintText: hint,
+        hintStyle: T.body.copyWith(color: AppColors.slate400),
+        isDense: true,
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+        prefixIcon: icon == null
+            ? null
+            : Icon(icon, size: 18, color: AppColors.slate400),
+        prefixText: prefix,
+        prefixStyle: T.body.copyWith(color: AppColors.slate500),
+        suffixText: suffix,
+        suffixStyle: T.s.copyWith(color: AppColors.slate400),
+        filled: true,
+        fillColor: AppColors.putih,
+        enabledBorder:
+            focused ? b(AppColors.merk500, 1.5) : b(AppColors.slate200),
+        focusedBorder: b(AppColors.merk500, 1.5),
+      ),
+    );
+    return maxLines > 1 ? field : SizedBox(height: 48, child: field);
+  }
+}
+
+/// Label + field dalam satu blok (jarak 8 di antaranya).
+class LabeledField extends StatelessWidget {
+  final String label;
+  final Widget field;
+  const LabeledField(this.label, this.field, {super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [FieldLabel(label), const SizedBox(height: 8), field],
+    );
+  }
+}
+
+/// Deretan pil pilihan yang membungkus ke baris berikutnya (satu aktif).
+class ChoicePills extends StatelessWidget {
+  final List<String> items;
+  final int selected;
+  final ValueChanged<int> onSelected;
+  const ChoicePills({
+    super.key,
+    required this.items,
+    required this.selected,
+    required this.onSelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: [
+        for (int i = 0; i < items.length; i++)
+          GestureDetector(
+            onTap: () => onSelected(i),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+              decoration: BoxDecoration(
+                color: i == selected ? AppColors.merk600 : AppColors.putih,
+                borderRadius: BorderRadius.circular(999),
+                border: Border.all(
+                    color:
+                        i == selected ? AppColors.merk600 : AppColors.slate200),
+              ),
+              child: Text(items[i],
+                  style: T.label.copyWith(
+                      color: i == selected
+                          ? AppColors.putih
+                          : AppColors.slate600)),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+// ───────────────────────────── CRUD helper ─────────────────────────────
+
+/// Dialog konfirmasi (dipakai untuk aksi Hapus / Batalkan / Nonaktifkan).
+Future<bool> confirmDialog(
+  BuildContext context, {
+  required String title,
+  required String message,
+  String confirm = 'Hapus',
+  bool danger = true,
+  IconData icon = LucideIcons.trash2,
+}) async {
+  final ok = await showDialog<bool>(
+    context: context,
+    builder: (ctx) => Dialog(
+      backgroundColor: AppColors.putih,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconBox(icon,
+                size: 48,
+                iconSize: 22,
+                radius: 14,
+                bg: danger ? AppColors.rose50 : AppColors.merk50,
+                fg: danger ? AppColors.rose600 : AppColors.merk700),
+            const SizedBox(height: 14),
+            Text(title, style: T.m, textAlign: TextAlign.center),
+            const SizedBox(height: 6),
+            Text(message,
+                style: T.s.copyWith(color: AppColors.slate600),
+                textAlign: TextAlign.center),
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlineButton(
+                      label: 'Batal', onTap: () => Navigator.pop(ctx, false)),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: PrimaryButton(
+                    label: confirm,
+                    color: danger ? AppColors.rose600 : AppColors.merk600,
+                    onTap: () => Navigator.pop(ctx, true),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+  return ok ?? false;
+}
+
+/// Notifikasi singkat di bawah layar.
+void toast(BuildContext context, String message) {
+  ScaffoldMessenger.of(context)
+    ..hideCurrentSnackBar()
+    ..showSnackBar(SnackBar(
+      behavior: SnackBarBehavior.floating,
+      backgroundColor: AppColors.slate900,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      content: Text(message, style: T.s.copyWith(color: AppColors.putih)),
+    ));
+}
+
+/// Tombol ikon kecil di baris daftar (edit / hapus).
+class RowAction extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onTap;
+  final bool danger;
+  const RowAction(this.icon, {super.key, required this.onTap, this.danger = false});
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: danger ? AppColors.rose50 : AppColors.slate50,
+      borderRadius: BorderRadius.circular(10),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(10),
+        onTap: onTap,
+        child: SizedBox(
+          width: 34,
+          height: 34,
+          child: Icon(icon,
+              size: 16,
+              color: danger ? AppColors.rose600 : AppColors.slate600),
         ),
       ),
     );
   }
+}
+
+/// Item menu (layar "Lainnya").
+class MenuTile extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String? subtitle;
+  final VoidCallback onTap;
+  final bool danger;
+  final String? tag;
+  const MenuTile({
+    super.key,
+    required this.icon,
+    required this.title,
+    this.subtitle,
+    required this.onTap,
+    this.danger = false,
+    this.tag,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        child: Row(
+          children: [
+            IconBox(icon,
+                size: 36,
+                bg: danger ? AppColors.rose50 : AppColors.merk50,
+                fg: danger ? AppColors.rose600 : AppColors.merk700),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title,
+                      style: T.bodyBold.copyWith(
+                          color: danger ? AppColors.rose600 : null)),
+                  if (subtitle != null) Text(subtitle!, style: T.s),
+                ],
+              ),
+            ),
+            if (tag != null) ...[
+              Pill(tag!,
+                  bg: AppColors.slate100, fg: AppColors.slate600, fontSize: 10),
+              const SizedBox(width: 6),
+            ],
+            if (!danger)
+              const Icon(LucideIcons.chevronRight,
+                  size: 18, color: AppColors.slate400),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Tampilan kosong (daftar tanpa isi).
+class EmptyState extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  const EmptyState(
+      {super.key,
+      required this.icon,
+      required this.title,
+      required this.subtitle});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 40),
+      child: Column(
+        children: [
+          IconBox(icon,
+              size: 52,
+              iconSize: 24,
+              radius: 16,
+              bg: AppColors.slate100,
+              fg: AppColors.slate400),
+          const SizedBox(height: 12),
+          Text(title, style: T.bodyBold),
+          const SizedBox(height: 2),
+          Text(subtitle, style: T.s, textAlign: TextAlign.center),
+        ],
+      ),
+    );
+  }
+}
+
+/// Baris barang dengan stepper jumlah kg (dipakai di Ajukan & Edit Permintaan).
+class QtyItemRow extends StatelessWidget {
+  final String emoji;
+  final String name;
+  final int price;
+  final int qty;
+  final ValueChanged<int> onChanged;
+  const QtyItemRow({
+    super.key,
+    required this.emoji,
+    required this.name,
+    required this.price,
+    required this.qty,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final active = qty > 0;
+    Widget btn(String t, bool filled, VoidCallback onTap) => InkWell(
+          onTap: onTap,
+          child: Container(
+            width: 32,
+            height: 34,
+            alignment: Alignment.center,
+            color: filled ? AppColors.merk600 : Colors.transparent,
+            child: Text(t,
+                style: T.bodyBold.copyWith(
+                    color: filled ? AppColors.putih : AppColors.slate700)),
+          ),
+        );
+    return AppCard(
+      borderColor: active ? AppColors.merk200 : AppColors.slate200,
+      padding: const EdgeInsets.all(12),
+      child: Row(
+        children: [
+          EmojiTile(emoji),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(name, style: T.bodyBold),
+                const SizedBox(height: 2),
+                Text('${rupiah(price)} /kg',
+                    style: T.s.copyWith(color: AppColors.nilai700)),
+              ],
+            ),
+          ),
+          Container(
+            decoration: BoxDecoration(
+              color: AppColors.putih,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: AppColors.slate200),
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: Row(
+              children: [
+                btn('−', false, () => onChanged(qty > 0 ? qty - 1 : 0)),
+                SizedBox(
+                  width: 52,
+                  height: 34,
+                  child: Center(
+                    child: Text('$qty kg',
+                        style: T.label.copyWith(color: AppColors.slate700)),
+                  ),
+                ),
+                btn('+', active, () => onChanged(qty + 1)),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Pemilih tanggal jemput (5 hari ke depan).
+class DayPicker extends StatelessWidget {
+  static const days = [
+    ('Kam', '2'),
+    ('Jum', '3'),
+    ('Sab', '4'),
+    ('Min', '5'),
+    ('Sen', '6'),
+  ];
+  final int selected;
+  final ValueChanged<int> onSelected;
+  const DayPicker({super.key, required this.selected, required this.onSelected});
+
+  /// Label lengkap, mis. "Sab, 4 Okt".
+  static String label(int i) => '${days[i].$1}, ${days[i].$2} Okt';
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        for (int i = 0; i < days.length; i++) ...[
+          if (i > 0) const SizedBox(width: 8),
+          Expanded(
+            child: GestureDetector(
+              onTap: () => onSelected(i),
+              child: Container(
+                height: 60,
+                decoration: BoxDecoration(
+                  color: i == selected ? AppColors.merk600 : AppColors.putih,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                      color: i == selected
+                          ? AppColors.merk600
+                          : AppColors.slate200),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(days[i].$1,
+                        style: T.s.copyWith(
+                            color: i == selected
+                                ? AppColors.merk100
+                                : AppColors.slate500)),
+                    Text(days[i].$2,
+                        style: T.m.copyWith(
+                            color: i == selected
+                                ? AppColors.putih
+                                : AppColors.slate900)),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+/// Pelacak status 5 langkah. [current] 1..5; langkah aktif berwarna [activeColor].
+class StatusTracker extends StatelessWidget {
+  static const labels = ['Diajukan', 'Dijadwal', 'Dijemput', 'Ditimbang', 'Selesai'];
+  final int current;
+  final Color activeColor;
+  const StatusTracker(
+      {super.key, required this.current, this.activeColor = AppColors.violet600});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        for (int i = 1; i <= labels.length; i++)
+          Expanded(
+            child: Column(
+              children: [
+                Container(
+                  width: 28,
+                  height: 28,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: i < current
+                        ? AppColors.merk600
+                        : i == current
+                            ? activeColor
+                            : AppColors.slate100,
+                  ),
+                  child: i < current
+                      ? const Icon(LucideIcons.check,
+                          size: 14, color: AppColors.putih)
+                      : Text('$i',
+                          style: T.label.copyWith(
+                              color: i == current
+                                  ? AppColors.putih
+                                  : AppColors.slate400)),
+                ),
+                const SizedBox(height: 6),
+                Text(labels[i - 1],
+                    style: T.xs.copyWith(
+                        color: i <= current
+                            ? AppColors.slate700
+                            : AppColors.slate400)),
+              ],
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+/// Baris dengan judul, keterangan, dan switch.
+class SwitchRow extends StatelessWidget {
+  final String title;
+  final String? subtitle;
+  final bool value;
+  final ValueChanged<bool> onChanged;
+  const SwitchRow({
+    super.key,
+    required this.title,
+    this.subtitle,
+    required this.value,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(title, style: T.bodyBold),
+              if (subtitle != null) Text(subtitle!, style: T.s),
+            ],
+          ),
+        ),
+        Switch(
+          value: value,
+          onChanged: onChanged,
+          activeThumbColor: AppColors.putih,
+          activeTrackColor: AppColors.merk600,
+          inactiveThumbColor: AppColors.putih,
+          inactiveTrackColor: AppColors.slate200,
+          trackOutlineColor: WidgetStateProperty.all(Colors.transparent),
+        ),
+      ],
+    );
+  }
+}
+
+/// Baris kunci–nilai (label kiri abu-abu, nilai kanan tebal).
+class KeyValue extends StatelessWidget {
+  final String k;
+  final String v;
+  const KeyValue(this.k, this.v, {super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 7),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(k, style: T.s),
+          const SizedBox(width: 12),
+          Expanded(child: Text(v, textAlign: TextAlign.right, style: T.label)),
+        ],
+      ),
+    );
+  }
+}
+
+/// Format "Rp 38.500".
+String rupiah(int v) {
+  final neg = v < 0;
+  final s = v.abs().toString();
+  final buf = StringBuffer();
+  for (int i = 0; i < s.length; i++) {
+    if (i > 0 && (s.length - i) % 3 == 0) buf.write('.');
+    buf.write(s[i]);
+  }
+  return '${neg ? '− ' : ''}Rp $buf';
 }
 
 // ───────────────────────────── Navigasi ─────────────────────────────

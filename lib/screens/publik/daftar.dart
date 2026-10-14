@@ -50,6 +50,16 @@ class _DaftarScreenState extends State<DaftarScreen> {
           const FieldLabel('Nama Lengkap'),
           const SizedBox(height: 8),
           const AppTextField(hint: 'Nama sesuai KTP'),
+          if (_peran == 1) ...[
+            const SizedBox(height: 18),
+            const FieldLabel('Nama Lapak'),
+            const SizedBox(height: 8),
+            const AppTextField(hint: 'Contoh: Lapak Hijau Karawang'),
+            const SizedBox(height: 18),
+            const FieldLabel('Alamat Lapak'),
+            const SizedBox(height: 8),
+            const AppTextField(hint: 'Nama jalan & nomor', maxLines: 2),
+          ],
           const SizedBox(height: 18),
           const FieldLabel('Nomor WhatsApp'),
           const SizedBox(height: 8),
@@ -75,6 +85,16 @@ class _DaftarScreenState extends State<DaftarScreen> {
           const FieldLabel('Kata Sandi'),
           const SizedBox(height: 8),
           const AppTextField(hint: 'Minimal 8 karakter', obscure: true),
+          if (_peran == 1) ...[
+            const SizedBox(height: 16),
+            const InfoBox(
+              icon: LucideIcons.shieldCheck,
+              text: 'Lapak baru akan diverifikasi admin (KTP & foto lapak) '
+                  'sebelum tampil di pencarian warga.',
+              bg: AppColors.sky50,
+              fg: AppColors.sky700,
+            ),
+          ],
         ],
       ),
       bottomNavigationBar: BottomActions(
@@ -85,8 +105,15 @@ class _DaftarScreenState extends State<DaftarScreen> {
             children: [
               PrimaryButton(
                 label: 'Buat Akun',
-                onTap: () => Navigator.pushNamed(
-                    context, _peran == 0 ? R.wDash : R.pDash),
+                onTap: () {
+                  toast(
+                      context,
+                      _peran == 0
+                          ? 'Akun warga berhasil dibuat'
+                          : 'Lapak terdaftar · menunggu verifikasi admin');
+                  Navigator.pushNamed(
+                      context, _peran == 0 ? R.wDash : R.pDash);
+                },
               ),
               const SizedBox(height: 12),
               GestureDetector(

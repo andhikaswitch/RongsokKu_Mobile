@@ -87,7 +87,7 @@ class _MasukScreenState extends State<MasukScreen> {
                 Expanded(child: Divider(color: AppColors.line)),
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 12),
-                  child: Text('Akun demo',
+                  child: Text('Akun demo, Klik yang dibawah untuk masuk ke user',
                       style: TextStyle(
                           color: AppColors.inkMuted, fontSize: 13)),
                 ),

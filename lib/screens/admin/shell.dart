@@ -27,7 +27,7 @@ Widget adminNav(BuildContext context, int current) {
         case 3:
           Navigator.pushNamed(context, R.sengketa);
         case 4:
-          Navigator.pushNamedAndRemoveUntil(context, R.beranda, (r) => false);
+          goTab(context, R.adMenu, R.adDash);
       }
     },
   );

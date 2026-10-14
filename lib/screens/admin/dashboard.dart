@@ -116,6 +116,18 @@ class AdminDashboard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
+          const SectionHeader('Master Data'),
+          const SizedBox(height: 12),
+          AppCard(
+            padding: EdgeInsets.zero,
+            child: MenuTile(
+              icon: LucideIcons.tags,
+              title: 'Jenis & Harga Rongsok',
+              subtitle: '11 jenis · kelola harga acuan',
+              onTap: () => Navigator.pushNamed(context, R.adHarga),
+            ),
+          ),
+          const SizedBox(height: 16),
           const SectionHeader('Pengepul Perlu Diawasi'),
           const SizedBox(height: 12),
           AppCard(
