@@ -386,21 +386,18 @@ PreferredSizeWidget panelBar(String title, String subtitle,
   ]);
 }
 
-/// Tanda logo: kotak merk/600 dengan ikon daur ulang.
+/// Tanda logo RongsokKu.
 class LogoMark extends StatelessWidget {
   final double size;
   const LogoMark({super.key, this.size = 36});
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return Image.asset(
+      'assets/images/rongsokku.png',
       width: size,
       height: size,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: AppColors.merk600,
-        borderRadius: BorderRadius.circular(size * 10 / 36),
-      ),
-      child: Icon(LucideIcons.recycle, color: AppColors.putih, size: size * 22 / 36),
+      fit: BoxFit.contain,
+      filterQuality: FilterQuality.medium,
     );
   }
 }
