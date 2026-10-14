@@ -87,13 +87,17 @@ class _MasukScreenState extends State<MasukScreen> {
                 Expanded(child: Divider(color: AppColors.line)),
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 12),
-                  child: Text('Akun demo, Klik yang dibawah untuk masuk ke user',
+                  child: Text('Akun demo',
                       style: TextStyle(
                           color: AppColors.inkMuted, fontSize: 13)),
                 ),
                 Expanded(child: Divider(color: AppColors.line)),
               ],
             ),
+            const SizedBox(height: 6),
+            const Text('Klik salah satu akun di bawah untuk masuk',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: AppColors.inkMuted, fontSize: 13)),
             const SizedBox(height: 20),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
