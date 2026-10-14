@@ -1010,9 +1010,8 @@ class SwitchRow extends StatelessWidget {
         Switch(
           value: value,
           onChanged: onChanged,
-          activeThumbColor: AppColors.putih,
+          thumbColor: WidgetStateProperty.all(AppColors.putih),
           activeTrackColor: AppColors.merk600,
-          inactiveThumbColor: AppColors.putih,
           inactiveTrackColor: AppColors.slate200,
           trackOutlineColor: WidgetStateProperty.all(Colors.transparent),
         ),
